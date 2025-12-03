@@ -4,41 +4,86 @@
 <meta charset="UTF-8">
 <title>Para ti ❤️</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;800&display=swap" rel="stylesheet">
+
 <style>
+    /* 🎨 CSS actualizado */
     body {
         margin: 0;
         overflow: hidden;
         background: url("FONDO.jpg");
         background-size: cover;
         background-position: center;
-        font-family: 'Courier New', monospace;
-        color: white;
+        font-family: 'Montserrat', sans-serif;
+        color: yellow;
+        text-transform: uppercase;
     }
 
+    /* Animación de vibración */
+    @keyframes shake {
+        0% { transform: translate(0,0) rotate(0deg); }
+        25% { transform: translate(1px,0) rotate(2deg); }
+        50% { transform: translate(0,0) rotate(0deg); }
+        75% { transform: translate(-1px,0) rotate(-2deg); }
+        100% { transform: translate(0,0) rotate(0deg); }
+    }
+
+    /* Texto central (subtítulos) - SOLUCIONADO: CENTRADO PERFECTO */
     #centralText {
         position: absolute;
-        top: 50%;
+        top: 50%; /* ✨ Ajustado a 50% */
         left: 50%;
-        transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%); /* ✨ Ajustado para centrado completo (X e Y) */
         font-size: 34px;
         text-align: center;
         width: 80%;
-        text-shadow: 0 0 10px white, 0 0 20px white;
+        color: yellow;
+        text-shadow: 0 0 10px yellow, 0 0 20px yellow;
+        font-weight: 800;
         display: none;
-        font-weight: bold;
         animation: glowCenter 3s infinite ease-in-out;
     }
 
     @keyframes glowCenter {
-        0% { text-shadow: 0 0 10px white; }
-        50% { text-shadow: 0 0 22px white; }
-        100% { text-shadow: 0 0 10px white; }
+        0% { text-shadow: 0 0 10px yellow; }
+        50% { text-shadow: 0 0 22px yellow; }
+        100% { text-shadow: 0 0 10px yellow; }
     }
 
+    /* Pantallas iniciales */
+    .screen {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        font-size: 28px;
+        font-weight: 600;
+    }
+
+    /* Botones */
+    .btn {
+        margin-top: 20px;
+        padding: 15px 40px;
+        font-size: 26px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        margin: 10px;
+        transition: 0.2s;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+    }
+
+    .btn:hover {
+        transform: scale(1.05);
+    }
+
+    /* Lluvia */
     .falling {
         position: absolute;
         font-size: 20px;
-        font-weight: bold;
+        font-weight: 600;
         animation: fall linear forwards, glow 2.5s infinite ease-in-out;
         user-select: none;
         filter: blur(0.5px);
@@ -54,27 +99,6 @@
         50% { opacity: 1; }
         100% { opacity: 0.6; }
     }
-
-    #startBtn {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 30px;
-        padding: 18px 40px;
-        background: rgba(255,255,255,0.9);
-        color: black;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-        font-weight: bold;
-        transition: 0.2s;
-    }
-
-    #startBtn:hover {
-        transform: translate(-50%, -50%) scale(1.05);
-        background: white;
-    }
 </style>
 </head>
 <body>
@@ -83,64 +107,109 @@
     <source src="TU_CANCION.mp3" type="audio/mpeg">
 </audio>
 
-<button id="startBtn">Presiona aquí para comenzar</button>
+<div id="screen1" class="screen">
+    <div>Hola amor, feliz cumpleaños<br>¿sabes que te amo demasiado?</div>
+    <br>
+    <button id="btnSi" class="btn" style="background:white; color:black;">Sí</button>
+    <button id="btnNo" class="btn" style="background:white; color:black;">No</button>
+</div>
+
+<div id="screen2" class="screen" style="display:none;">
+    <div>Más te vale grosera</div>
+    <br>
+    <button id="btnAmor" class="btn" style="background:white; color:black;">Te amo</button>
+</div>
 
 <div id="centralText"></div>
 
 <script>
-document.getElementById("music").volume = 0.8;
+
+/* 🔊 La música empieza automáticamente */
+window.addEventListener("load", () => {
+    const music = document.getElementById("music");
+    music.volume = 0.8;
+    music.play().catch(() => {
+        // Algunos navegadores necesitan interacción para iniciar
+        document.body.addEventListener("click", () => music.play(), { once: true });
+    });
+});
 
 let lluviaActiva = false;
 let intervalLluvia = null;
 
-function iniciar() {
-    document.getElementById("music").play();
-    document.getElementById("startBtn").style.display = "none";
+/* Colores pastel */
+const coloresPastel = [
+    "#FFB7C5", "#FFD1DC", "#FFDFBA", "#FFF5BA",
+    "#BAFFC9", "#BAE1FF", "#E3BAFF", "#FFC8A2"
+];
+
+const frases = [
+    "Te amo", "Eres mi alegría", "Guapa", "Mi cielo", "Preciosa",
+    "Bella", "Hermosa", "Te quiero", "Mi todo",
+    "❤️", "💖", "✨", "🌸", "💕", "🌙"
+];
+
+/* 🟡 JavaScript corregido: botón “Sí” ya no se va, crece solo horizontal */
+let siSize = 26;
+
+document.getElementById("btnNo").addEventListener("click", () => {
+    siSize += 8;
+
+    const btnSi = document.getElementById("btnSi");
+
+    // Crece solo hacia los lados, ya no hacia arriba/abajo
+    btnSi.style.fontSize = siSize + "px";
+    btnSi.style.padding = "15px " + (40 + siSize) + "px";
+
+    // Cuando está grande, empieza a vibrar
+    if (siSize >= 50) {
+        btnSi.style.animation = "shake 0.15s infinite";
+    }
+
+    // Límite para que no explote
+    if (siSize > 90) siSize = 90;
+});
+
+/* Sí → pantalla 2 */
+document.getElementById("btnSi").addEventListener("click", () => {
+    document.getElementById("screen1").style.display = "none";
+    document.getElementById("screen2").style.display = "block";
+});
+
+/* Te amo → iniciar animación */
+document.getElementById("btnAmor").addEventListener("click", () => {
+    document.getElementById("screen2").style.display = "none";
+    iniciarAnimacion();
+});
+
+/* INICIA la parte bonita */
+function iniciarAnimacion() {
     document.getElementById("centralText").style.display = "block";
     lluviaActiva = true;
     intervalLluvia = setInterval(crearFrase, 250);
     escribir();
 }
 
-document.getElementById("startBtn").addEventListener("click", iniciar);
-
-// Paletas suaves pastel
-const coloresPastel = [
-    "#FFB7C5", "#FFD1DC", "#FFDFBA", "#FFF5BA",
-    "#BAFFC9", "#BAE1FF", "#E3BAFF", "#FFC8A2"
-];
-
-// Frases + emojis
-const frases = [
-    "Te amo", "Eres mi alegría", "Guapa", "Mi cielo", "Preciosa",
-    "Bella", "Hermosa", "Te quiero", "Mi todo", "❤️", "💖", "✨", "🌸", "💕", "🌙"
-];
-
+/* Lluvia */
 function crearFrase() {
     if (!lluviaActiva) return;
 
     const frase = document.createElement("div");
     frase.className = "falling";
+
     frase.textContent = frases[Math.floor(Math.random() * frases.length)];
-
-    // Color pastel aleatorio
     frase.style.color = coloresPastel[Math.floor(Math.random() * coloresPastel.length)];
-
-    // Glow pastel
     frase.style.textShadow = `0 0 10px ${frase.style.color}, 0 0 22px ${frase.style.color}`;
 
     frase.style.left = Math.random() * 100 + "vw";
     frase.style.top = "-10vh";
-
-    // Velocidad aleatoria
     frase.style.animationDuration = (2 + Math.random() * 3) + "s";
 
     document.body.appendChild(frase);
-
     setTimeout(() => frase.remove(), 5000);
 }
 
-// Texto central tipo subtítulos
+/* Subtítulos */
 const subtitulos = [
     "Hola amor...",
     "Te hice esto con mucho cariño.",
@@ -169,6 +238,7 @@ function escribir() {
             setTimeout(escribir, 1200);
             return;
         }
+
         setTimeout(escribir, velocidad);
     }
 }

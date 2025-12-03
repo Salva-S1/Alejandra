@@ -25,6 +25,7 @@
         width: 80%;
         text-shadow: 0 0 10px white, 0 0 20px white;
         display: none;
+        font-weight: bold;
         animation: glowCenter 3s infinite ease-in-out;
     }
 
@@ -37,12 +38,10 @@
     .falling {
         position: absolute;
         font-size: 20px;
-        color: rgb(255, 220, 220);
-        text-shadow: 
-            0 0 6px rgba(255, 200, 200, 0.8),
-            0 0 12px rgba(255, 150, 150, 0.6);
+        font-weight: bold;
         animation: fall linear forwards, glow 2.5s infinite ease-in-out;
         user-select: none;
+        filter: blur(0.5px);
     }
 
     @keyframes fall {
@@ -105,9 +104,16 @@ function iniciar() {
 
 document.getElementById("startBtn").addEventListener("click", iniciar);
 
+// Paletas suaves pastel
+const coloresPastel = [
+    "#FFB7C5", "#FFD1DC", "#FFDFBA", "#FFF5BA",
+    "#BAFFC9", "#BAE1FF", "#E3BAFF", "#FFC8A2"
+];
+
+// Frases + emojis
 const frases = [
     "Te amo", "Eres mi alegría", "Guapa", "Mi cielo", "Preciosa",
-    "Eres mi destino", "Bella", "Hermosa", "Te quiero", "Mi todo", "❤️"
+    "Bella", "Hermosa", "Te quiero", "Mi todo", "❤️", "💖", "✨", "🌸", "💕", "🌙"
 ];
 
 function crearFrase() {
@@ -117,14 +123,24 @@ function crearFrase() {
     frase.className = "falling";
     frase.textContent = frases[Math.floor(Math.random() * frases.length)];
 
+    // Color pastel aleatorio
+    frase.style.color = coloresPastel[Math.floor(Math.random() * coloresPastel.length)];
+
+    // Glow pastel
+    frase.style.textShadow = `0 0 10px ${frase.style.color}, 0 0 22px ${frase.style.color}`;
+
     frase.style.left = Math.random() * 100 + "vw";
     frase.style.top = "-10vh";
+
+    // Velocidad aleatoria
     frase.style.animationDuration = (2 + Math.random() * 3) + "s";
 
     document.body.appendChild(frase);
+
     setTimeout(() => frase.remove(), 5000);
 }
 
+// Texto central tipo subtítulos
 const subtitulos = [
     "Hola amor...",
     "Te hice esto con mucho cariño.",
@@ -160,4 +176,3 @@ function escribir() {
 
 </body>
 </html>
-

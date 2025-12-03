@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Para ti ❤️</title>
+
+<style>
+    body {
+        margin: 0;
+        overflow: hidden;
+        background: url("FONDO.jpg");
+        background-size: cover;
+        background-position: center;
+        font-family: 'Courier New', monospace;
+        color: white;
+    }
+
+    #centralText {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 34px;
+        text-align: center;
+        width: 80%;
+        text-shadow: 0 0 10px white, 0 0 20px white;
+        display: none;
+        animation: glowCenter 3s infinite ease-in-out;
+    }
+
+    @keyframes glowCenter {
+        0% { text-shadow: 0 0 10px white; }
+        50% { text-shadow: 0 0 22px white; }
+        100% { text-shadow: 0 0 10px white; }
+    }
+
+    .falling {
+        position: absolute;
+        font-size: 20px;
+        color: rgb(255, 220, 220);
+        text-shadow: 
+            0 0 6px rgba(255, 200, 200, 0.8),
+            0 0 12px rgba(255, 150, 150, 0.6);
+        animation: fall linear forwards, glow 2.5s infinite ease-in-out;
+        user-select: none;
+    }
+
+    @keyframes fall {
+        0% { transform: translateY(-10vh); opacity: 1; }
+        100% { transform: translateY(120vh); opacity: 0; }
+    }
+
+    @keyframes glow {
+        0% { opacity: 0.6; }
+        50% { opacity: 1; }
+        100% { opacity: 0.6; }
+    }
+
+    #startBtn {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 30px;
+        padding: 18px 40px;
+        background: rgba(255,255,255,0.9);
+        color: black;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: 0.2s;
+    }
+
+    #startBtn:hover {
+        transform: translate(-50%, -50%) scale(1.05);
+        background: white;
+    }
+</style>
+</head>
+<body>
+
+<audio id="music" loop>
+    <source src="TU_CANCION.mp3" type="audio/mpeg">
+</audio>
+
+<button id="startBtn">Presiona aquí para comenzar</button>
+
+<div id="centralText"></div>
+
+<script>
+document.getElementById("music").volume = 0.8;
+
+let lluviaActiva = false;
+let intervalLluvia = null;
+
+function iniciar() {
+    document.getElementById("music").play();
+    document.getElementById("startBtn").style.display = "none";
+    document.getElementById("centralText").style.display = "block";
+    lluviaActiva = true;
+    intervalLluvia = setInterval(crearFrase, 250);
+    escribir();
+}
+
+document.getElementById("startBtn").addEventListener("click", iniciar);
+
+const frases = [
+    "Te amo", "Eres mi alegría", "Guapa", "Mi cielo", "Preciosa",
+    "Eres mi destino", "Bella", "Hermosa", "Te quiero", "Mi todo"
+];
+
+function crearFrase() {
+    if (!lluviaActiva) return;
+
+    const frase = document.createElement("div");
+    frase.className = "falling";
+    frase.textContent = frases[Math.floor(Math.random() * frases.length)];
+
+    frase.style.left = Math.random() * 100 + "vw";
+    frase.style.top = "-10vh";
+    frase.style.animationDuration = (2 + Math.random() * 3) + "s";
+
+    document.body.appendChild(frase);
+    setTimeout(() => frase.remove(), 5000);
+}
+
+const subtitulos = [
+    "Hola amor...",
+    "Te hice esto con mucho cariño.",
+    "Solo quería decirte algo bonito...",
+    "Gracias por estar conmigo.",
+    "Eres lo mejor que me ha pasado.",
+    "Te quiero más de lo que imaginas ❤️"
+];
+
+let indexTexto = 0;
+let indexLetra = 0;
+let velocidad = 70;
+
+function escribir() {
+    const div = document.getElementById("centralText");
+
+    if (indexTexto < subtitulos.length) {
+        let fraseActual = subtitulos[indexTexto];
+        div.innerHTML = fraseActual.substring(0, indexLetra);
+
+        if (indexLetra < fraseActual.length) {
+            indexLetra++;
+        } else {
+            indexTexto++;
+            indexLetra = 0;
+            setTimeout(escribir, 1200);
+            return;
+        }
+        setTimeout(escribir, velocidad);
+    }
+}
+</script>
+
+</body>
+</html>
